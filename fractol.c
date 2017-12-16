@@ -37,9 +37,53 @@ static	void		ft_get_new_fractol(int keycode, t_map *map)
 		map->f_num = 0;
 	else
 		map->f_num = keycode - KEYBOARD_DIGITS_BASE_NUM;
-	// ft_bzero(map->str, ft_strlen(map->str));
-	mlx_clear_window(map->mlx_ptr, map->win_ptr);
+	ft_bzero(map->str, HEIGHT * map->sl);
+	// mlx_clear_window(map->mlx_ptr, map->win_ptr);
 	ft_draw_fractol(map);
+}
+
+static	void		ft_move_fractol(int keycode, t_map *map)
+{
+	if (keycode == KEY_LEFT)
+		map->x_offset -= OFFSET_NUM * map->speed;
+	else if (keycode == KEY_RIGHT)
+		map->x_offset += OFFSET_NUM * map->speed;
+	else if (keycode == KEY_DOWN)
+		map->y_offset += OFFSET_NUM * map->speed;
+	else
+		map->y_offset -= OFFSET_NUM * map->speed;
+	ft_draw_fractol(map);
+}
+
+static	void		ft_change_speed(int keycode, t_map *map)
+{
+	if (keycode == 83)
+		map->speed = 1;
+	else if (keycode == 84)
+		map->speed = 2;
+	else if (keycode == 85)
+		map->speed = 3;
+	else if (keycode == 86)
+		map->speed = 4;
+	else if (keycode == 87)
+		map->speed = 5;
+	else if (keycode == 88)
+		map->speed = 6;
+	else if (keycode == 89)
+		map->speed = 7;
+	else if (keycode == 91)
+		map->speed = 8;
+	else if (keycode == 92)
+		map->speed = 9;
+}
+
+static	void		ft_change_zoom(int keycode, t_map *map)
+{
+	if (map->zoom >= 1)
+	{
+		map->zoom += (keycode == PLUS) ? ZOOM_COEF : -ZOOM_COEF;
+		ft_draw_fractol(map);
+	}
 }
 
 static	int 		ft_key_hook(int keycode, t_map *map)
@@ -48,6 +92,17 @@ static	int 		ft_key_hook(int keycode, t_map *map)
 		exit(0);
 	else if ((keycode >= ONE && keycode <= FOUR) || keycode == ZERO)
 		ft_get_new_fractol(keycode, map);
+	else if (keycode == SPACE)
+	{
+		map->max_iter += ITER_STEP;
+		ft_draw_fractol(map);
+	}
+	else if (keycode >= KEY_LEFT && keycode <= KEY_UP)
+		ft_move_fractol(keycode, map);
+	else if (keycode >= 83 && keycode <= 92 && keycode != 90)
+		ft_change_speed(keycode, map);
+	else if (keycode == PLUS || keycode == NEG)
+		ft_change_zoom(keycode, map);
 	return (0);
 }
 
@@ -62,47 +117,33 @@ static	int 		ft_julia_coef(int x, int y, t_map *map)
 {
 	if (INSIDE_WIN && (map->f_num == 3))
 	{
-		printf("X:%d and Y:%d\n", x, y);
-		map->julia_coef_x = x / (WIDTH / 4) - 2;
-		map->julia_coef_y = y / (WIDTH / 4) - 2;
-		mlx_clear_window(map->mlx_ptr, map->win_ptr);
-		// ft_bzero(map->str, ft_strlen(map->str));
+#ifdef DEBUG
+		// printf("HERE!\n");
+		// printf("X:%d and Y:%d\n", x, y);
+		// printf("Julia's old coefs:%d|%d ---", map->julia_coef_x, map->julia_coef_y);
+#endif
+		map->julia_coef_x = ((double)x / (WIDTH / 4)) - 2;
+		map->julia_coef_y = ((double)y / (HEIGHT / 4)) - 2;
+#ifdef DEBUG
+		printf("Julia's new coefs:%d|%d ---", map->julia_coef_x, map->julia_coef_y);
+#endif
+		// mlx_clear_window(map->mlx_ptr, map->win_ptr);
+		ft_bzero(map->str, HEIGHT * map->sl);
 		ft_draw_fractol(map);
 	}
 	return (0);
 }
 
-int			rainbow_color(t_map *map)
+void				ft_get_color(unsigned iter_num, t_map *map)
 {
-	int		color;
-	int		r;
-	int		g;
-	int		b;
+	const float		freq = 0.3;
 
-map->frequency = 0.4;
-	map->center = 164;
-	map->width = 91;
-	map->r = 3;
-	map->g = 5;
-	map->b = 6;
-
-	r = sin(map->frequency * map->iter
-			+ map->r) * map->width
-		+ map->center;
-	g = sin(map->frequency * map->iter +
-			map->g) * map->width
-		+ map->center;
-	b = sin(map->frequency * map->iter +
-			map->b) * map->width
-		+ map->center;
-	color = ((b >> 16) & 0xFF);
-	color = ((g >> 8) & 0xFF);
-	color = ((r) & 0xFF);
-	return (color);
+	map->str[map->x * 4 + map->y * map->sl] = sin(freq * iter_num + 2) * 127 + 128;
+	map->str[map->x * 4 + map->y * map->sl + 1] = sin(freq * iter_num + 0) * 127 + 128;
+	map->str[map->x * 4 + map->y * map->sl + 2] = sin(freq * iter_num + 4) * 127 + 128;
 }
 
-
-void		ft_draw_fractol(t_map *map)
+void				ft_draw_fractol(t_map *map)
 {
 	map->y = 0;
 	while (map->y < HEIGHT)
@@ -111,25 +152,13 @@ void		ft_draw_fractol(t_map *map)
 		while (map->x < WIDTH)
 		{
 			map->iter = 0;
-			map->function[map->f_num](map);
-			mlx_pixel_put(map->mlx_ptr, map->win_ptr, map->x, map->y, rainbow_color(map));
-			// if (map->iter < map->max_iter)
-			// {
-			// 	map->str[map->x * 4 + map->y * map->sl] = 124;
-			// 	map->str[map->x * 4 + map->y * map->sl + 1] = 12;
-			// 	map->str[map->x * 4 + map->y * map->sl + 2] = 79;
-			// }
-			// else
-			// {
-			// 	map->str[map->x * 4 + map->y * map->sl] = 25;
-			// 	map->str[map->x * 4 + map->y * map->sl + 1] = 52;
-			// 	map->str[map->x * 4 + map->y * map->sl + 2] = 125;
-			// }
+			(*map->function[map->f_num])(map);
 			map->x++;
 		}
 		map->y++;
 	}
-	// mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
+	mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
+	ft_bzero(map->str, HEIGHT * map->sl);
 }
 
 int		main(int argc, char const *argv[])
@@ -140,6 +169,7 @@ int		main(int argc, char const *argv[])
 	if (argc == 2)
 	{
 		fractol_num = ft_is_fractol(argv[1]);
+		// double complex lol = 4.0 + 5.0 * I;
 		if (fractol_num > -1)
 		{
 			fractol_init(fractol_num, (char*)argv[1], &map);
