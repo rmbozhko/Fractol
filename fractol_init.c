@@ -16,8 +16,8 @@ void		fractol_init(int fractol_num, char *fractol_name, t_map *map)
 	map->max_iter = ITER_START;
 	map->f_num = fractol_num;
 	map->mlx_ptr = mlx_init();
-	map->win_ptr = mlx_new_window(map->mlx_ptr, WIDTH, HEIGHT, fractol_name);
-	map->img_ptr = mlx_new_image(map->mlx_ptr, WIDTH, HEIGHT);
+	map->win_ptr = mlx_new_window(map->mlx_ptr, map->win_width, map->win_height, fractol_name);
+	map->img_ptr = mlx_new_image(map->mlx_ptr, map->win_width, map->win_height);
 	map->str = mlx_get_data_addr(map->img_ptr, &map->bpp, &map->sl, &map->endian);
 	map->function = ft_handle_fractol(fractol_num);
 	map->pltt = (t_color){0.3F, 128, 127, 2, 0, 4};

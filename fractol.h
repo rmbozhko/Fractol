@@ -9,7 +9,10 @@
 #include <complex.h>
 #include <pthread.h>
 
-# define USAGE_STR "usage: ./fractol [fractol_name]\n\t\t (mandelbrot, io, ship, julia, newton)"
+# define MIN_WIN_SIZE "400"
+# define USAGE_BONUS "(mandelbrot, io, ship, julia, newton)\n\t\t (unit should be greater than "
+# define USAGE_STR "usage: ./fractol [fractol_name[width:uint height:uint]]\n\t\t "
+# define CONCAT USAGE_STR USAGE_BONUS MIN_WIN_SIZE ")"
 # define FRACTOL_NUM 5
 # define HEIGHT 800
 # define WIDTH 1200
@@ -86,6 +89,8 @@ typedef		struct  s_threads_info
 
 typedef		struct 	s_map
 {
+	int	win_width;
+	int	win_height;
 	bool		pause;
 	int 		speed;
 	int 		x_offset;
@@ -109,7 +114,7 @@ typedef		struct 	s_map
 	int 		sl;
 	int 		endian;
 	t_color		pltt;
-	t_threads_info		*threads_ptr;
+	t_threads_info		**threads;
 }					t_map;
 
 typedef void 		(*pft)(t_map *map);
@@ -125,6 +130,6 @@ void		ft_draw_fractol(t_map *map);
 pft 		*ft_handle_fractol(int fractol_num);
 void		ft_change_default_color(t_map *map);
 int			get_next_line(const int fd, char **line, char *str);
-void		ft_draw_fractol(void *map);
+t_threads_info		**ft_get_threads_info(void);
 
 #endif

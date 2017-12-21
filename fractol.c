@@ -112,8 +112,8 @@ static	int 		ft_mouse_hook(int mouse_code, int pos_x, int pos_y, t_map *map)
 {
 	if (mouse_code == 1 || mouse_code == 2)
 	{
-		map->x_offset += pos_x - (WIDTH / 2);
-		map->y_offset += pos_y - (HEIGHT / 2);
+		map->x_offset += pos_x - (map->win_width / 2);
+		map->y_offset += pos_y - (map->win_height  / 2);
 		if (ZOOM_BOUNDARY)
 			map->zoom += (mouse_code == 1) ? ZOOM_COEF : -ZOOM_COEF;
 		ft_draw_fractol(map);
@@ -126,8 +126,8 @@ static	int 		ft_julia_coef(int x, int y, t_map *map)
 {
 	if (INSIDE_WIN && (map->f_num == 3 || map->f_num == 1) && !map->pause)
 	{
-		map->julia_coef_x = ((double)x / (WIDTH / 4)) - 2;
-		map->julia_coef_y = ((double)y / (HEIGHT / 4)) - 2;
+		map->julia_coef_x = ((double)x / (map->win_width / 4)) - 2;
+		map->julia_coef_y = ((double)y / (map->win_height / 4)) - 2;
 		ft_draw_fractol(map);
 	}
 	return (0);
@@ -140,55 +140,97 @@ void				ft_get_color(unsigned iter, t_map *map)
 	map->str[map->x * 4 + map->y * map->sl + 2] = COLOR_GEN(map->pltt.r_coef);
 }
 
-void		ft_draw_fractol(void *map)
-{
-	t_map		*temp;
+// void				ft_putnstr(const char *str, size_t len)
+// {
+// 	size_t		i;
 
-	temp = (t_map*)map;
-	ft_bzero(map->str, HEIGHT * map->sl);
-	temp->threads_info[temp->threads->thread_id].y_start = 0;
-	while (temp->threads_info[temp->threads->thread_id].y_start < temp->threads_info[temp->thread_id].y_end)
+// 	i = 0;
+// 	while (i < len)
+// 		ft_putnbr(str[i++]);
+// }
+
+void				ft_draw_fractol(t_map *map)
+{
+	ft_bzero(map->str, map->win_height * map->sl);
+	map->y = 0;
+	while (map->y < map->win_height)
 	{
-		temp->threads_info[temp->threads->thread_id].x_start = 0;
-		while (temp->threads_info[temp->threads->thread_id].x_start < WIDTH)
+		map->x = 0;
+		while (map->x < map->win_width)
 		{
-			temp->threads_info[temp->threads->thread_id].iter = 0;
-			(*temp->function[temp->f_num])(temp);
-			temp->threads_info[temp->threads->thread_id].x_start++;
+			map->iter = 0;
+			(*map->function[map->f_num])(map);
+			map->x++;
 		}
-		temp->threads_info[temp->threads->thread_id].y_start++;
+		map->y++;
 	}
 	mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
 }
 
-// void				ft_draw_fractol(t_map *map)
-// {
-// 	ft_bzero(map->str, HEIGHT * map->sl);
-// 	map->y = 0;
-// 	while (map->y < HEIGHT)
-// 	{
-// 		map->x = 0;
-// 		while (map->x < WIDTH)
-// 		{
-// 			map->iter = 0;
-// 			(*map->function[map->f_num])(map);
-// 			map->x++;
-// 		}
-// 		map->y++;
-// 	}
-// 	mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
-// }
+void				ft_handle_win_params(t_map *map, const char *value, bool flag)
+{
+	unsigned		temp;
+
+	if (ft_is_numeric((char*)value))
+	{
+		temp = ft_atoi((char*)value);
+		if (temp >= ft_atoi(MIN_WIN_SIZE))
+		{
+			if (flag)
+				map->win_height = temp;
+			else
+				map->win_width = temp;
+			return ;
+		}
+	}
+	ft_throw_exception(USAGE_STR);
+}
+
+int 				ft_validate_cmd_args(const char **args, t_map *map)
+{
+	size_t		i;
+	char 		*temp;
+	int 		fractol_num;
+
+	i = 0;
+	temp = NULL;
+	fractol_num = -1;
+	while (args[i])
+	{
+		if (ft_is_fractol(args[i]) != -1)
+			fractol_num = ft_is_fractol(args[i]);
+		else
+		{
+			temp = ft_strsub(args[i], 0, ft_strlen("width:"));
+			if (!ft_strcmp(temp, "width:"))
+				ft_handle_win_params(map, args[i] + ft_strlen("width:"), false);
+			ft_strdel(&temp);
+			temp = ft_strsub(args[i], 0, ft_strlen("height:"));
+			if (!ft_strcmp(temp, "height:"))
+				ft_handle_win_params(map, args[i] + ft_strlen("height:"), true);
+			ft_strdel(&temp);
+		}
+		i++;
+	}
+	return (fractol_num);
+}
 
 int		main(int argc, char const *argv[])
 {
 	int			fractol_num;
 	t_map		map;
 
-	if (argc == 2)
+	if (argc >= 2)
 	{
-		fractol_num = ft_is_fractol(argv[1]);
+		map.win_width = WIDTH;
+		map.win_height = HEIGHT;
+		if (argc > 2)
+			fractol_num = ft_validate_cmd_args((argv) + 1, &map);
+		else
+			fractol_num = ft_is_fractol(argv[1]);
 		if (fractol_num > -1)
 		{
+			printf("WIDTH of fractal:%u|HEIGHT of fractal:%u\n", map.win_width, map.win_height);
 			fractol_init(fractol_num, (char*)argv[1], &map);
 			ft_draw_fractol(&map);
 			mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
@@ -198,5 +240,5 @@ int		main(int argc, char const *argv[])
 			return 0;
 		}
 	}
-	ft_throw_exception(USAGE_STR);
+	ft_throw_exception(CONCAT);
 }
