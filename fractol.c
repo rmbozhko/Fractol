@@ -37,8 +37,6 @@ static	void		ft_get_new_fractol(int keycode, t_map *map)
 		map->f_num = 0;
 	else
 		map->f_num = keycode - KEYBOARD_DIGITS_BASE_NUM;
-	ft_bzero(map->str, HEIGHT * map->sl);
-	// mlx_clear_window(map->mlx_ptr, map->win_ptr);
 	ft_draw_fractol(map);
 }
 
@@ -79,7 +77,7 @@ static	void		ft_change_speed(int keycode, t_map *map)
 
 static	void		ft_change_zoom(int keycode, t_map *map)
 {
-	if (map->zoom >= 1)
+	if (ZOOM_BOUNDARY)
 	{
 		map->zoom += (keycode == PLUS) ? ZOOM_COEF : -ZOOM_COEF;
 		ft_draw_fractol(map);
@@ -103,63 +101,83 @@ static	int 		ft_key_hook(int keycode, t_map *map)
 		ft_change_speed(keycode, map);
 	else if (keycode == PLUS || keycode == NEG)
 		ft_change_zoom(keycode, map);
+	else if (keycode == C_LTTR)
+		ft_change_default_color(map);
+	else if (keycode == P_LTTR)
+		map->pause = !map->pause;
 	return (0);
 }
 
 static	int 		ft_mouse_hook(int mouse_code, int pos_x, int pos_y, t_map *map)
 {
-	printf("MOUSE_CODE:%d|X:%d|Y:%d\n", mouse_code, pos_x, pos_y);
-	printf("SCALING....\n");
-	return (0);
+	if (mouse_code == 1 || mouse_code == 2)
+	{
+		map->x_offset += pos_x - (WIDTH / 2);
+		map->y_offset += pos_y - (HEIGHT / 2);
+		if (ZOOM_BOUNDARY)
+			map->zoom += (mouse_code == 1) ? ZOOM_COEF : -ZOOM_COEF;
+		ft_draw_fractol(map);
+		return (0);
+	}
+	return (1);
 }
 
 static	int 		ft_julia_coef(int x, int y, t_map *map)
 {
-	if (INSIDE_WIN && (map->f_num == 3))
+	if (INSIDE_WIN && (map->f_num == 3 || map->f_num == 1) && !map->pause)
 	{
-#ifdef DEBUG
-		// printf("HERE!\n");
-		// printf("X:%d and Y:%d\n", x, y);
-		// printf("Julia's old coefs:%d|%d ---", map->julia_coef_x, map->julia_coef_y);
-#endif
 		map->julia_coef_x = ((double)x / (WIDTH / 4)) - 2;
 		map->julia_coef_y = ((double)y / (HEIGHT / 4)) - 2;
-#ifdef DEBUG
-		printf("Julia's new coefs:%d|%d ---", map->julia_coef_x, map->julia_coef_y);
-#endif
-		// mlx_clear_window(map->mlx_ptr, map->win_ptr);
-		ft_bzero(map->str, HEIGHT * map->sl);
 		ft_draw_fractol(map);
 	}
 	return (0);
 }
 
-void				ft_get_color(unsigned iter_num, t_map *map)
+void				ft_get_color(unsigned iter, t_map *map)
 {
-	const float		freq = 0.3;
-
-	map->str[map->x * 4 + map->y * map->sl] = sin(freq * iter_num + 2) * 127 + 128;
-	map->str[map->x * 4 + map->y * map->sl + 1] = sin(freq * iter_num + 0) * 127 + 128;
-	map->str[map->x * 4 + map->y * map->sl + 2] = sin(freq * iter_num + 4) * 127 + 128;
+	map->str[map->x * 4 + map->y * map->sl] = COLOR_GEN(map->pltt.b_coef);
+	map->str[map->x * 4 + map->y * map->sl + 1] = COLOR_GEN(map->pltt.g_coef);
+	map->str[map->x * 4 + map->y * map->sl + 2] = COLOR_GEN(map->pltt.r_coef);
 }
 
-void				ft_draw_fractol(t_map *map)
+void		ft_draw_fractol(void *map)
 {
-	map->y = 0;
-	while (map->y < HEIGHT)
+	t_map		*temp;
+
+	temp = (t_map*)map;
+	ft_bzero(map->str, HEIGHT * map->sl);
+	temp->threads_info[temp->threads->thread_id].y_start = 0;
+	while (temp->threads_info[temp->threads->thread_id].y_start < temp->threads_info[temp->thread_id].y_end)
 	{
-		map->x = 0;
-		while (map->x < WIDTH)
+		temp->threads_info[temp->threads->thread_id].x_start = 0;
+		while (temp->threads_info[temp->threads->thread_id].x_start < WIDTH)
 		{
-			map->iter = 0;
-			(*map->function[map->f_num])(map);
-			map->x++;
+			temp->threads_info[temp->threads->thread_id].iter = 0;
+			(*temp->function[temp->f_num])(temp);
+			temp->threads_info[temp->threads->thread_id].x_start++;
 		}
-		map->y++;
+		temp->threads_info[temp->threads->thread_id].y_start++;
 	}
 	mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
-	ft_bzero(map->str, HEIGHT * map->sl);
 }
+
+// void				ft_draw_fractol(t_map *map)
+// {
+// 	ft_bzero(map->str, HEIGHT * map->sl);
+// 	map->y = 0;
+// 	while (map->y < HEIGHT)
+// 	{
+// 		map->x = 0;
+// 		while (map->x < WIDTH)
+// 		{
+// 			map->iter = 0;
+// 			(*map->function[map->f_num])(map);
+// 			map->x++;
+// 		}
+// 		map->y++;
+// 	}
+// 	mlx_put_image_to_window(map->mlx_ptr, map->win_ptr, map->img_ptr, 0, 0);
+// }
 
 int		main(int argc, char const *argv[])
 {
@@ -169,7 +187,6 @@ int		main(int argc, char const *argv[])
 	if (argc == 2)
 	{
 		fractol_num = ft_is_fractol(argv[1]);
-		// double complex lol = 4.0 + 5.0 * I;
 		if (fractol_num > -1)
 		{
 			fractol_init(fractol_num, (char*)argv[1], &map);

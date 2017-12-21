@@ -7,7 +7,7 @@
 #include "minilibx/mlx.h"
 #include <math.h>
 #include <complex.h>
-
+#include <pthread.h>
 
 # define USAGE_STR "usage: ./fractol [fractol_name]\n\t\t (mandelbrot, io, ship, julia, newton)"
 # define FRACTOL_NUM 5
@@ -15,13 +15,16 @@
 # define WIDTH 1200
 # define OFFSET_NUM 5
 # define ZOOM_COEF 0.3
+# define ZOOM_BOUNDARY map->zoom >= -50 && map->zoom <= 500
+# define INSIDE_WIN ((x >= 0 && x <= WIDTH) && (y >= 0 && y <= HEIGHT))
+# define COLOR_OPTIONS_NUM 6
+# define THREADS_NUM 4
 
 # define ESC 53
 # define ONE 18
 # define ZERO 29
 # define FOUR 21
 # define KEYBOARD_DIGITS_BASE_NUM 17
-# define INSIDE_WIN ((x >= 0 && x <= WIDTH) && (y >= 0 && y <= HEIGHT))
 # define SPACE 49
 # define ITER_START 10
 # define ITER_STEP 10
@@ -31,11 +34,59 @@
 # define KEY_RIGHT 124
 # define PLUS 69
 # define NEG 78
+# define C_LTTR 8
+# define P_LTTR 35
 
-// typedef	void (*pft)(struct s_map *map);
+# define BUFF_SIZE 1
+# define NL_CODE ft_strchr(temp, '\n')
+# define S_C_SUB (NL_CODE - temp)
+# define IF_FP ((fd < 0 || fd > 4096) || ((read(fd, buff, 0)) == -1 && !(head)))
+# define IF_SP (!(line) || !(ft_memset(buff, 0, BUFF_SIZE + 1)))
+
+# define RANGE map->pltt.width + map->pltt.center
+# define COLOR_GEN(gamma) sin(map->pltt.freq * iter + gamma) * RANGE
+
+typedef	struct	s_node
+{
+	int				fd;
+	char			*str;
+	struct s_node	*next;
+}				t_node;
+
+typedef		struct 	s_complex
+{
+	double		real;
+	double		im;		
+}					t_complex;
+
+typedef		struct  s_color
+{
+	const float			freq;
+	unsigned short		center;
+	unsigned short		width;
+	unsigned short		b_coef;
+	unsigned short		g_coef;
+	unsigned short		r_coef;
+}					t_color;
+
+
+typedef		struct  s_threads_info
+{
+	size_t				thread_id;
+	int					iter;
+	size_t				x_start;
+	// size_t				x_end;
+	size_t				y_start;
+	size_t				y_end;
+	t_complex			ft_curr;
+	t_complex			ft_prev;
+	t_complex			constant;
+	double				newton_cnst;
+}					t_threads_info;
 
 typedef		struct 	s_map
 {
+	bool		pause;
 	int 		speed;
 	int 		x_offset;
 	int 		y_offset;
@@ -57,13 +108,9 @@ typedef		struct 	s_map
 	int 		bpp;
 	int 		sl;
 	int 		endian;
+	t_color		pltt;
+	t_threads_info		*threads_ptr;
 }					t_map;
-
-typedef		struct 	s_complex
-{
-	double		real;
-	double		im;		
-}					t_complex;
 
 typedef void 		(*pft)(t_map *map);
 
@@ -76,5 +123,8 @@ void		newton(t_map *map);
 void		fractol_init(int fractol_num, char *fractol_name, t_map *map);
 void		ft_draw_fractol(t_map *map);
 pft 		*ft_handle_fractol(int fractol_num);
+void		ft_change_default_color(t_map *map);
+int			get_next_line(const int fd, char **line, char *str);
+void		ft_draw_fractol(void *map);
 
 #endif

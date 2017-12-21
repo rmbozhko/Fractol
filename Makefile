@@ -1,7 +1,7 @@
 NAME = fractal
 CC = gcc
 
-SRC = fractol.c fractols.c fractol_init.c
+SRC = fractol.c fractols.c fractol_init.c bonus_color.c get_next_line.c
 OBJ = $(SRC:.c=.o)
 DEBUG = #-DDEBUG
 CFLAGS = -c $(DEBUG)#-Wall -Wextra -Werror
