@@ -1,4 +1,4 @@
-NAME = fractal
+NAME = fractol
 CC = gcc
 
 SRC = fractol.c fractols.c fractol_init.c bonus_color.c get_next_line.c fractol_threads.c

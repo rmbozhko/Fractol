@@ -18,8 +18,9 @@
 # define WIDTH 1200
 # define OFFSET_NUM 5
 # define ZOOM_COEF 0.3
-# define ZOOM_BOUNDARY map->zoom >= -50 && map->zoom <= 500
-# define INSIDE_WIN ((x >= 0 && x <= WIDTH) && (y >= 0 && y <= HEIGHT))
+# define ZOOM_BOUNDARY map->zoom >= -50 
+//&& map->zoom <= 500
+# define INSIDE_WIN ((x >= 0 && x <= map->win_width) && (y >= 0 && y <= map->win_height))
 # define COLOR_OPTIONS_NUM 6
 # define THREADS_NUM 4
 
@@ -72,21 +73,6 @@ typedef		struct  s_color
 	unsigned short		r_coef;
 }					t_color;
 
-
-typedef		struct  s_threads_info
-{
-	size_t				thread_id;
-	int					iter;
-	size_t				x_start;
-	// size_t				x_end;
-	size_t				y_start;
-	size_t				y_end;
-	t_complex			ft_curr;
-	t_complex			ft_prev;
-	t_complex			constant;
-	double				newton_cnst;
-}					t_threads_info;
-
 typedef		struct 	s_map
 {
 	int	win_width;
@@ -114,8 +100,23 @@ typedef		struct 	s_map
 	int 		sl;
 	int 		endian;
 	t_color		pltt;
-	t_threads_info		**threads;
+	// t_threads_info		**threads;
 }					t_map;
+
+typedef		struct  s_threads_info
+{
+	size_t				thread_id;
+	int					iter;
+	size_t				x_start;
+	// size_t				x_end;
+	size_t				y_start;
+	size_t				y_end;
+	t_complex			ft_curr;
+	t_complex			ft_prev;
+	t_complex			constant;
+	double				newton_cnst;
+	t_map				*map;
+}					t_threads_info;
 
 typedef void 		(*pft)(t_map *map);
 
@@ -130,6 +131,6 @@ void		ft_draw_fractol(t_map *map);
 pft 		*ft_handle_fractol(int fractol_num);
 void		ft_change_default_color(t_map *map);
 int			get_next_line(const int fd, char **line, char *str);
-t_threads_info		**ft_get_threads_info(void);
+t_threads_info		**ft_get_threads_info(t_map *map);
 
 #endif
