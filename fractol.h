@@ -5,9 +5,11 @@
 #include <stdbool.h>
 #include "libft/libft.h"
 #include "minilibx/mlx.h"
+#include "jpeglib/jpeglib.h"
 #include <math.h>
 #include <complex.h>
 #include <pthread.h>
+#include <time.h>
 
 # define MIN_WIN_SIZE "400"
 # define USAGE_BONUS "(mandelbrot, io, ship, julia, newton)\n\t\t (unit should be greater than "
@@ -40,6 +42,7 @@
 # define NEG 78
 # define C_LTTR 8
 # define P_LTTR 35
+# define S_LTTR 1
 
 # define BUFF_SIZE 1
 # define NL_CODE ft_strchr(temp, '\n')
@@ -75,8 +78,8 @@ typedef		struct  s_color
 
 typedef		struct 	s_map
 {
-	int	win_width;
-	int	win_height;
+	int			win_width;
+	int			win_height;
 	bool		pause;
 	int 		speed;
 	int 		x_offset;
@@ -132,5 +135,6 @@ pft 		*ft_handle_fractol(int fractol_num);
 void		ft_change_default_color(t_map *map);
 int			get_next_line(const int fd, char **line, char *str);
 t_threads_info		**ft_get_threads_info(t_map *map);
+int 		ft_make_printscreen(t_map *map);
 
 #endif

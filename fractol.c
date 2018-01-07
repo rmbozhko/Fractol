@@ -103,6 +103,8 @@ static	int 		ft_key_hook(int keycode, t_map *map)
 		ft_change_default_color(map);
 	else if (keycode == P_LTTR)
 		map->pause = !map->pause;
+	else if (keycode == S_LTTR)
+		ft_make_printscreen(map);
 	return (0);
 }
 
