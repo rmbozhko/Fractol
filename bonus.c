@@ -1,103 +1,5 @@
 #include "fractol.h"
 
-unsigned char *raw_image = NULL;
-
-int width = 1088;//1590;//2400;
-int height = 1084;//1584;//3200;
-int bytes_per_pixel = 3;   /* or 1 for GRACYSCALE images */
-int color_space = JCS_RGB; /* or JCS_GRAYSCALE for grayscale images */
-
-int read_jpeg_file( char *filename )
-{
-        struct jpeg_decompress_struct cinfo;
-        struct jpeg_error_mgr jerr;
-
-        JSAMPROW row_pointer[1];
-
-        FILE *infile = fopen( filename, "rb" );
-        unsigned long location = 0;
-        int i = 0;
-
-        if ( !infile )
-        {
-                printf("Error opening jpeg file %s\n!", filename );
-                return -1;
-        }
-
-        cinfo.err = jpeg_std_error( &jerr );
-
-        jpeg_create_decompress( &cinfo );
-
-        jpeg_stdio_src( &cinfo, infile );
-
-        jpeg_read_header( &cinfo, TRUE );
-
-
-        jpeg_start_decompress( &cinfo );
-        printf("components = %d|%d|%d\n", cinfo.num_components, cinfo.output_width, cinfo.output_height);
-
-        raw_image = (unsigned char*)malloc( cinfo.output_width*cinfo.output_height*cinfo.num_components);
-
-        row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
-
-        while( cinfo.output_scanline < cinfo.image_height)
-        {
-        //printf("width:%d|height:%d|components:%d\n", cinfo.output_width, cinfo.output_height, cinfo.num_components);
-                jpeg_read_scanlines( &cinfo, row_pointer, 1 );
-                for( i=0; i<cinfo.image_width*cinfo.num_components;i++)
-                        raw_image[location++] = row_pointer[0][i];
-        }
-        jpeg_finish_decompress( &cinfo );
-        jpeg_destroy_decompress( &cinfo );
-        free( row_pointer[0] );
-        fclose( infile );
-
-        return 1;
-}
-
-int write_jpeg_file( char *filename )
-{
-        struct jpeg_compress_struct cinfo;
-        struct jpeg_error_mgr jerr;
-
-        JSAMPROW row_pointer[1];
-        FILE *outfile = fopen( filename, "wb" );
-
-        if ( !outfile )
-        {
-                printf("Error opening output jpeg file %s\n!", filename );
-                return -1;
-        }
-        cinfo.err = jpeg_std_error( &jerr );
-        jpeg_create_compress(&cinfo);
-        jpeg_stdio_dest(&cinfo, outfile);
-
-
-        cinfo.image_width = width;
-        cinfo.image_height = height;
-        cinfo.input_components = bytes_per_pixel;
-        cinfo.in_color_space = color_space;
-
-        jpeg_set_defaults( &cinfo );
-
-        jpeg_start_compress( &cinfo, TRUE );
-        // bzero(raw_image, cinfo.next_scanline * cinfo.image_width *  cinfo.input_components);
-        while( cinfo.next_scanline < cinfo.image_height)
-        {
-                // printf("scanline:%d|width:%d|components:%d\n", cinfo.next_scanline, cinfo.image_width, cinfo.input_components);
-                row_pointer[0] = &raw_image[ cinfo.next_scanline * cinfo.image_width *  cinfo.input_components];
-                //printf("%d:%u\n", cinfo.next_scanline, &raw_image[ cinfo.next_scanline * cinfo.image_width *  cinfo.input_components]);
-                jpeg_write_scanlines( &cinfo, row_pointer, 1 );
-        //      printf("scanline:%d|height:%d\n", cinfo.next_scanline, cinfo.image_height);
-        }
-
-        jpeg_finish_compress( &cinfo );
-        jpeg_destroy_compress( &cinfo );
-        fclose( outfile );
-
-        return 1;
-}
-
 unsigned char   *ft_get_proper(t_map *map)
 {
     unsigned char       *temp;
@@ -108,14 +10,13 @@ unsigned char   *ft_get_proper(t_map *map)
     i = 0;
     j = 0;
     len = map->win_height * map->sl;
-    temp = (unsigned char*)malloc(sizeof(char) * map->win_height * map->win_width * bytes_per_pixel + 1);
+    temp = (unsigned char*)malloc(sizeof(char) * map->win_height * map->win_width * 3 + 1);
     // ft_bzero(temp, map->win_height * map->win_width * bytes_per_pixel);
     while (i < len && j < len)
     {
         temp[i++] = (unsigned char)map->str[j++];
         if (!(j % 4))
         {
-            printf("LEN:%lu|J:%zu\n", len, j);
             j++;
         }
     }
@@ -133,19 +34,18 @@ unsigned char       *ft_to_bgr(unsigned char *str, t_map *map)
 
     i = 0;
     j = 0;
-    len = sizeof(char) * map->win_height * map->win_width * bytes_per_pixel;
+    len = sizeof(char) * map->win_height * map->win_width * 3;
     temp = (unsigned char*)malloc(len + 1);
     while (j < len)//(i < len) //&& j < len)
     {
-        temp[j] = str[i + 2];
-        temp[j + 1] = str[i + 1];
-        temp[j + 2] = str[i];
-        // c = str[i];
-        // str[i] = str[i + 2];
-        // str[i + 2] = c;
+        // temp[j++] = 255; // red
+        // temp[j++] = 0; // green
+        // temp[j++] = 0; // blue
+        temp[j++] = str[i + 2];
+        temp[j++] = str[i + 1];
+        temp[j++] = str[i];
         i += 3;
-        j += 3;
-        printf("HERE!\n");
+        // j += 3;
     }
     temp[j] = '\0';
     return (temp);
@@ -158,7 +58,6 @@ char            *ft_find_month(const char *str)
     "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     i = 0;
-
     while (mon_names[i])
     {
         if (!ft_strcmp(mon_names[i], str))
@@ -257,42 +156,22 @@ int        ft_make_printscreen(t_map *map)
 
     cinfo.image_width = map->win_width;
     cinfo.image_height = map->win_height;
-    cinfo.input_components = bytes_per_pixel;
-    cinfo.in_color_space = color_space;
+    cinfo.input_components = 3;
+    cinfo.in_color_space = JCS_RGB;
 
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
     unsigned char *temp = ft_get_proper(map);
     unsigned char *lol = ft_to_bgr(temp, map);
-    printf("RESULT:%d\n", ft_strcmp(temp, lol));
+    printf("RESULT:%d\n", ft_strcmp((const char*)temp, (const char*)lol));
     while(cinfo.next_scanline < cinfo.image_height)
     {
-            // printf("scanline:%d|width:%d|components:%d\n", cinfo.next_scanline, cinfo.image_width, cinfo.input_components);
-            // row_pointer[0] = &map->str[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
-            // row_pointer[0] = &map->str[cinfo.next_scanline * cinfo.image_width * (cinfo.input_components + 1)];
-            row_pointer[0] = &temp[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
-            printf("%d:%u\n", cinfo.next_scanline, &raw_image[ cinfo.next_scanline * cinfo.image_width *  cinfo.input_components]);
+            row_pointer[0] = &lol[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
             jpeg_write_scanlines(&cinfo, row_pointer, 1);
-    //      printf("scanline:%d|height:%d\n", cinfo.next_scanline, cinfo.image_height);
     }
-
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
     fclose(outfile);
     printf("Printscreen!\n");
     return 1;
 }
-
-// int main()
-// {
-//   char *infilename = "fractol.jpg", *outfilename = "lol.jpg";
-
-//   if( read_jpeg_file( infilename ) > 0 )
-//     {
-//       if( write_jpeg_file( outfilename ) < 0 ) return -1;
-//     } else {
-//     return -1;
-//   }
-
-//   return 0;
-// }

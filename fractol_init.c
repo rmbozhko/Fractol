@@ -1,5 +1,19 @@
 #include "fractol.h"
 
+pft 		*ft_handle_fractol(int fractol_num)
+{
+	pft 		*fractol_ptr;
+
+	fractol_ptr = (pft*)malloc(sizeof(pft) * FRACTOL_NUM);
+	fractol_ptr[0] = mandelbrot;
+	fractol_ptr[1] = io;
+	fractol_ptr[2] = ship;
+	fractol_ptr[3] = julia;
+	fractol_ptr[4] = newton;
+	fractol_ptr[5] = NULL;
+	return (fractol_ptr);
+}
+
 void		fractol_init(int fractol_num, char *fractol_name, t_map *map)
 {
 	map->pause = false;
