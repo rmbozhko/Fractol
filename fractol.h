@@ -24,7 +24,8 @@
 //&& map->zoom <= 500
 # define INSIDE_WIN ((x >= 0 && x <= map->win_width) && (y >= 0 && y <= map->win_height))
 # define COLOR_OPTIONS_NUM 6
-# define THREADS_NUM 4
+# define THREADS_NUM 2
+//4
 
 # define ESC 53
 # define ONE 18
@@ -52,6 +53,9 @@
 
 # define RANGE map->pltt.width + map->pltt.center
 # define COLOR_GEN(gamma) (sin(map->pltt.freq * iter + gamma) * RANGE)
+
+# define ALLOWED_WIN_AREA_FOR_THREADS_COEF (800 * 800) // to be found, may not be correct
+
 
 typedef	struct	s_node
 {
@@ -101,7 +105,8 @@ struct 	s_map
 	void		*mlx_ptr;
 	void		*win_ptr;
 	void		*img_ptr;
-	char		*str;
+	// char		*str;
+	unsigned char		*str;
 	int 		bpp;
 	int 		sl;
 	int 		endian;
@@ -140,5 +145,7 @@ int 		ft_make_printscreen(t_map *map);
 int 		ft_mouse_hook(int mouse_code, int pos_x, int pos_y, t_map *map);
 int 		ft_key_hook(int keycode, t_map *map);
 int 		ft_julia_coef(int x, int y, t_map *map);
+unsigned char        *ft_get_threads_proper(t_map *map, int bpp);
+unsigned char   *ft_get_proper(t_map *map);
 
 #endif

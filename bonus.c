@@ -11,20 +11,19 @@ unsigned char   *ft_get_proper(t_map *map)
     j = 0;
     len = map->win_height * map->sl;
     temp = (unsigned char*)malloc(sizeof(char) * map->win_height * map->win_width * 3 + 1);
-    // ft_bzero(temp, map->win_height * map->win_width * bytes_per_pixel);
+    // ft_bzero(temp, sizeof(char) * map->win_height * map->win_width * 3 + 1);
     while (i < len && j < len)
     {
-        temp[i++] = (unsigned char)map->str[j++];
-        if (!(j % 4))
-        {
+        // printf("VALUE:%d\n", map->str[j]);
+        temp[i++] = map->str[j++];
+        if (((j + 1) % 4) == 0)
             j++;
-        }
     }
     temp[i] = '\0';
     return (temp);
 }
 
-unsigned char       *ft_to_bgr(unsigned char *str, t_map *map)
+unsigned char       *ft_to_rgb(unsigned char *str, t_map *map)
 {
     unsigned char       c;
     size_t              i;
@@ -36,16 +35,12 @@ unsigned char       *ft_to_bgr(unsigned char *str, t_map *map)
     j = 0;
     len = sizeof(char) * map->win_height * map->win_width * 3;
     temp = (unsigned char*)malloc(len + 1);
-    while (j < len)//(i < len) //&& j < len)
+    while (i < len && j < len)
     {
-        // temp[j++] = 255; // red
-        // temp[j++] = 0; // green
-        // temp[j++] = 0; // blue
         temp[j++] = str[i + 2];
         temp[j++] = str[i + 1];
         temp[j++] = str[i];
         i += 3;
-        // j += 3;
     }
     temp[j] = '\0';
     return (temp);
@@ -140,10 +135,12 @@ char        *ft_get_fname(const t_map *map)
 int        ft_make_printscreen(t_map *map)
 {
     char        *filename;
-    struct      jpeg_compress_struct cinfo;
+    struct      jpeg_compress_struct cinfo; // RGB
     struct      jpeg_error_mgr jerr;
     JSAMPROW    row_pointer[1];
     FILE        *outfile;
+    unsigned char *lol;
+    unsigned char *temp;
 
     filename = ft_get_fname(map);
     outfile = fopen(filename, "wb");
@@ -161,9 +158,12 @@ int        ft_make_printscreen(t_map *map)
 
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
-    unsigned char *temp = ft_get_proper(map);
-    unsigned char *lol = ft_to_bgr(temp, map);
-    printf("RESULT:%d\n", ft_strcmp((const char*)temp, (const char*)lol));
+    printf("%d\n", ((map->win_height * map->sl) < ALLOWED_WIN_AREA_FOR_THREADS_COEF));
+    if ((map->win_height * map->win_width) < ALLOWED_WIN_AREA_FOR_THREADS_COEF)
+        temp = ft_get_proper(map);
+    else
+        temp = ft_get_threads_proper(map, cinfo.input_components);
+    lol = ft_to_rgb(temp, map);
     while(cinfo.next_scanline < cinfo.image_height)
     {
             row_pointer[0] = &lol[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];

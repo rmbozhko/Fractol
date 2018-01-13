@@ -2,7 +2,7 @@
 
 void				ft_handle_win_params(t_map *map, const char *value, bool flag)
 {
-	unsigned		temp;
+	int			temp;
 
 	if (ft_is_numeric((char*)value) && (ft_strlen(value) <= 4))
 	{

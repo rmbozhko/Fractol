@@ -2,15 +2,10 @@
 
 void				ft_get_color(unsigned iter, t_map *map)
 {
-	// printf("blue:%f\n", COLOR_GEN(map->pltt.b_coef));
-	// printf("green:%f\n", COLOR_GEN(map->pltt.g_coef));
-	// printf("red:%f\n", COLOR_GEN(map->pltt.r_coef));
-	// blue
-	map->str[map->x * 4 + map->y * map->sl] = 0;//COLOR_GEN(map->pltt.b_coef);
-	// green
-	map->str[map->x * 4 + map->y * map->sl + 1] = 55;//COLOR_GEN(map->pltt.g_coef);
-	// red
-	map->str[map->x * 4 + map->y * map->sl + 2] = 127;//COLOR_GEN(map->pltt.r_coef);
+	// BGR
+	map->str[map->x * 4 + map->y * map->sl] = (unsigned char)COLOR_GEN(map->pltt.b_coef);
+	map->str[map->x * 4 + map->y * map->sl + 1] = (unsigned char)COLOR_GEN(map->pltt.g_coef);
+	map->str[map->x * 4 + map->y * map->sl + 2] = (unsigned char)COLOR_GEN(map->pltt.r_coef);
 }
 
 // void		ft_draw_fractol(t_map *map)
