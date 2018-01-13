@@ -24,7 +24,7 @@
 //&& map->zoom <= 500
 # define INSIDE_WIN ((x >= 0 && x <= map->win_width) && (y >= 0 && y <= map->win_height))
 # define COLOR_OPTIONS_NUM 6
-# define THREADS_NUM 2
+# define THREADS_NUM 4
 //4
 
 # define ESC 53
@@ -54,7 +54,7 @@
 # define RANGE map->pltt.width + map->pltt.center
 # define COLOR_GEN(gamma) (sin(map->pltt.freq * iter + gamma) * RANGE)
 
-# define ALLOWED_WIN_AREA_FOR_THREADS_COEF (800 * 800) // to be found, may not be correct
+# define ALLOWED_WIN_AREA_FOR_THREADS_COEF (1000 * 1000) // to be found, may not be correct
 
 
 typedef	struct	s_node

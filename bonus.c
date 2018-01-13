@@ -11,40 +11,62 @@ unsigned char   *ft_get_proper(t_map *map)
     j = 0;
     len = map->win_height * map->sl;
     temp = (unsigned char*)malloc(sizeof(char) * map->win_height * map->win_width * 3 + 1);
-    // ft_bzero(temp, sizeof(char) * map->win_height * map->win_width * 3 + 1);
+    ft_bzero(temp, sizeof(char) * map->win_height * map->win_width * 3 + 1);
     while (i < len && j < len)
     {
-        // printf("VALUE:%d\n", map->str[j]);
-        temp[i++] = map->str[j++];
         if (((j + 1) % 4) == 0)
             j++;
+        temp[i++] = map->str[j + 2];
+        temp[i++] = map->str[j + 1];
+        temp[i++] = map->str[j];
+        j += 3;
     }
-    temp[i] = '\0';
+    // temp[i] = '\0';
     return (temp);
 }
 
-unsigned char       *ft_to_rgb(unsigned char *str, t_map *map)
-{
-    unsigned char       c;
-    size_t              i;
-    size_t              j;
-    unsigned long       len;
-    unsigned char       *temp;
+// unsigned char       *ft_to_rgb(unsigned char *str, t_map *map)
+// {
+//     unsigned char       c;
+//     size_t              i;
+//     size_t              j;
+//     unsigned long       len;
+//     unsigned char       *temp;
 
-    i = 0;
-    j = 0;
-    len = sizeof(char) * map->win_height * map->win_width * 3;
-    temp = (unsigned char*)malloc(len + 1);
-    while (i < len && j < len)
-    {
-        temp[j++] = str[i + 2];
-        temp[j++] = str[i + 1];
-        temp[j++] = str[i];
-        i += 3;
-    }
-    temp[j] = '\0';
-    return (temp);
-}
+//     i = 0;
+//     j = 0;
+//     len = sizeof(char) * map->win_height * map->win_width * 3;
+//     temp = (unsigned char*)malloc(len + 1);
+//     while (i < len && j < len)
+//     {
+        
+//     }
+//     temp[j] = '\0';
+//     return (temp);
+// }
+
+// unsigned char       *ft_to_rgb(unsigned char *str, t_map *map)
+// {
+//     unsigned char       c;
+//     size_t              i;
+//     size_t              j;
+//     unsigned long       len;
+//     unsigned char       *temp;
+
+//     i = 0;
+//     j = 0;
+//     len = sizeof(char) * map->win_height * map->win_width * 3;
+//     temp = (unsigned char*)malloc(len + 1);
+//     while (i < len && j < len)
+//     {
+//         temp[j++] = str[i + 2];
+//         temp[j++] = str[i + 1];
+//         temp[j++] = str[i];
+//         i += 3;
+//     }
+//     temp[j] = '\0';
+//     return (temp);
+// }
 
 char            *ft_find_month(const char *str)
 {
@@ -160,14 +182,16 @@ int        ft_make_printscreen(t_map *map)
     jpeg_start_compress(&cinfo, TRUE);
     printf("%d\n", ((map->win_height * map->sl) < ALLOWED_WIN_AREA_FOR_THREADS_COEF));
     if ((map->win_height * map->win_width) < ALLOWED_WIN_AREA_FOR_THREADS_COEF)
+    {
         temp = ft_get_proper(map);
+        // lol = ft_to_rgb(temp, map);
+    }
     else
         temp = ft_get_threads_proper(map, cinfo.input_components);
-    lol = ft_to_rgb(temp, map);
     while(cinfo.next_scanline < cinfo.image_height)
     {
-            row_pointer[0] = &lol[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
-            jpeg_write_scanlines(&cinfo, row_pointer, 1);
+        row_pointer[0] = &temp[cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
+        jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
