@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fractol_init.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/07/21 16:31:46 by rbozhko           #+#    #+#             */
+/*   Updated: 2018/07/21 17:36:23 by rbozhko          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
-pft 		*ft_handle_fractol(int fractol_num)
+pft			*ft_handle_fractol(int fractol_num)
 {
-	pft 		*fractol_ptr;
+	pft		*fractol_ptr;
 
 	fractol_ptr = (pft*)malloc(sizeof(pft) * FRACTOL_NUM);
 	fractol_ptr[0] = mandelbrot;
@@ -29,10 +41,12 @@ void		fractol_init(int fractol_num, char *fractol_name, t_map *map)
 	map->max_iter = ITER_START;
 	map->f_num = fractol_num;
 	map->mlx_ptr = mlx_init();
-	map->win_ptr = mlx_new_window(map->mlx_ptr, map->win_width, map->win_height, "Fractol");
-	map->img_ptr = mlx_new_image(map->mlx_ptr, map->win_width, map->win_height);
-	map->str = (unsigned char*)mlx_get_data_addr(map->img_ptr, &map->bpp, &map->sl, &map->endian);
+	map->win_ptr = mlx_new_window(map->mlx_ptr, map->win_width,
+			map->win_height, "Fractol");
+	map->img_ptr = mlx_new_image(map->mlx_ptr, map->win_width,
+			map->win_height);
+	map->str = (unsigned char*)mlx_get_data_addr(map->img_ptr,
+			&map->bpp, &map->sl, &map->endian);
 	map->function = ft_handle_fractol(fractol_num);
 	map->pltt = (t_color){0.3F, 128, 127, 2, 0, 4};
-	// map->threads = ft_get_threads_info();
 }

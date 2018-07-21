@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fractol.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/07/21 16:31:35 by rbozhko           #+#    #+#             */
+/*   Updated: 2018/07/21 16:31:37 by rbozhko          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FRACTOL_H
 #define FRACTOL_H
 
@@ -28,6 +40,10 @@
 # define THREADS_NUM 4
 //4
 
+
+#define CALC_REAL 1.5 * (map->x + map->x_offset - map->win_width / 2) / (0.5 * map->zoom * map->win_width)
+#define CALC_IMG (map->y + map->y_offset - map->win_height / 2) / (0.5 * map->zoom * map->win_height)
+
 # define ESC 53
 # define ONE 18
 # define ZERO 29
@@ -56,7 +72,17 @@
 # define COLOR_GEN(gamma) (sin(map->pltt.freq * iter + gamma) * RANGE)
 
 # define ALLOWED_WIN_AREA_FOR_THREADS_COEF (1000 * 1000) // to be found, may not be correct
+# define THREADS_ALLOC sizeof(unsigned char) * map->win_height * map->win_width * bpp + 1
 
+typedef struct s_jpeg
+{
+	size_t				id;
+	size_t				len;
+	size_t				y_start;
+	size_t				y_end;
+	unsigned char		*dest_str;
+	unsigned char		*src_str;
+} t_jpeg;
 
 typedef	struct	s_node
 {
@@ -146,7 +172,11 @@ int 		ft_make_printscreen(t_map *map);
 int 		ft_mouse_hook(int mouse_code, int pos_x, int pos_y, t_map *map);
 int 		ft_key_hook(int keycode, t_map *map);
 int 		ft_julia_coef(int x, int y, t_map *map);
-unsigned char        *ft_get_threads_proper(t_map *map, int bpp);
+unsigned char        *ft_get_threads(t_map *map, int bpp, size_t i, size_t range);
 unsigned char   *ft_get_proper(t_map *map);
+char				**ft_get_months(void);
+char				*ft_find_month(const char *str);
+char				*ft_get_time_part(const char *curr_time);
+char				*ft_get_fractol_name(const t_map *map);
 
 #endif

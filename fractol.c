@@ -6,13 +6,13 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 15:03:51 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 15:03:52 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 17:27:40 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void				ft_handle_win_params(t_map *map, const char *value, bool flag)
+void		ft_handle_win(t_map *map, const char *value, bool f)
 {
 	int			temp;
 
@@ -21,7 +21,7 @@ void				ft_handle_win_params(t_map *map, const char *value, bool flag)
 		temp = ft_atoi((char*)value);
 		if (temp >= ft_atoi(MIN_WIN_SIZE))
 		{
-			if (flag)
+			if (f)
 				map->win_height = (temp <= 1395) ? temp : HEIGHT;
 			else
 				map->win_width = (temp <= 2560) ? temp : WIDTH;
@@ -46,39 +46,36 @@ int			ft_is_fractol(const char *str)
 	return (-1);
 }
 
-int 				ft_validate_cmd_args(const char **args, t_map *map, int *fractol_pos)
+int			ft_valargs(const char **a, t_map *map, int *pos, int f_num)
 {
-	size_t		i;
-	char 		*temp;
-	int 		fractol_num;
+	int			i;
+	char		*temp;
 
-	i = 0;
+	i = -1;
 	temp = NULL;
-	fractol_num = -1;
-	while (args[i])
+	while (a[++i])
 	{
-		if (ft_is_fractol(args[i]) != -1)
+		if (ft_is_fractol(a[i]) != -1)
 		{
-			*fractol_pos = i + 1;
-			fractol_num = ft_is_fractol(args[i]);
+			*pos = i + 1;
+			f_num = ft_is_fractol(a[i]);
 		}
 		else
 		{
-			temp = ft_strsub(args[i], 0, ft_strlen("width:"));
+			temp = ft_strsub(a[i], 0, ft_strlen("width:"));
 			if (!ft_strcmp(temp, "width:"))
-				ft_handle_win_params(map, args[i] + ft_strlen("width:"), false);
+				ft_handle_win(map, a[i] + ft_strlen("width:"), false);
 			ft_strdel(&temp);
-			temp = ft_strsub(args[i], 0, ft_strlen("height:"));
+			temp = ft_strsub(a[i], 0, ft_strlen("height:"));
 			if (!ft_strcmp(temp, "height:"))
-				ft_handle_win_params(map, args[i] + ft_strlen("height:"), true);
+				ft_handle_win(map, a[i] + ft_strlen("height:"), true);
 			ft_strdel(&temp);
 		}
-		i++;
 	}
-	return (fractol_num);
+	return (f_num);
 }
 
-int		main(int argc, char const *argv[])
+int			main(int argc, char const *argv[])
 {
 	int			fractol_num;
 	t_map		map;
@@ -90,18 +87,18 @@ int		main(int argc, char const *argv[])
 		map.win_height = HEIGHT;
 		fractol_pos = 1;
 		if (argc > 2)
-			fractol_num = ft_validate_cmd_args((argv) + 1, &map, &fractol_pos);
+			fractol_num = ft_valargs((argv) + 1, &map, &fractol_pos, -1);
 		else
 			fractol_num = ft_is_fractol(argv[1]);
 		if (fractol_num > -1)
 		{
 			fractol_init(fractol_num, (char*)argv[fractol_pos], &map);
 			ft_draw_fractol(&map);
-		 	mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
+			mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
 			mlx_hook(map.win_ptr, 6, 0, ft_julia_coef, &map);
 			mlx_mouse_hook(map.win_ptr, ft_mouse_hook, &map);
 			mlx_loop(map.mlx_ptr);
-			return 0;
+			return (0);
 		}
 	}
 	ft_throw_exception(CONCAT);

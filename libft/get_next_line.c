@@ -6,7 +6,7 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/22 15:58:24 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 14:59:34 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 17:20:17 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static	int		ft_no_nl_line(char *temp, char **line)
 
 	str = temp;
 	string = *line;
-	ft_strdel(&string);
+	ft_memdel((void**)&string);
 	*line = ft_strdup(temp);
 	ft_memset(temp, 0, ft_strlen(temp));
-	ft_strdel(&str);
+	ft_memdel((void**)&str);
 	return (1);
 }
 
@@ -36,14 +36,9 @@ static int		ft_rtn_line(char *temp, char **line)
 	if (NL_CODE)
 	{
 		*line = ft_strsub(temp, 0, S_C_SUB);
-		ft_strdel(&string);
+		ft_memdel((void**)&string);
 		string = *line;
-		if (ft_strlen(temp) == 1 && temp[0] == '\n')
-		{
-			ft_strdel(&str);
-			return (0);
-		}
-		ft_strdel(&str);
+		ft_memdel((void**)&str);
 		return (1);
 	}
 	else
@@ -63,7 +58,7 @@ int				get_next_line(const int fd, char **line, char *str)
 	temp = head;
 	while ((bytes = read(fd, buff, BUFF_SIZE)) >= 0)
 	{
-		ft_strdel(&str);
+		ft_memdel((void**)&str);
 		(bytes < BUFF_SIZE) ? buff[bytes] = '\0' : 0;
 		temp = ft_strjoin(temp, buff);
 		str = temp;
@@ -72,14 +67,9 @@ int				get_next_line(const int fd, char **line, char *str)
 			if ((NL_CODE) || (!NL_CODE && ft_strlen(buff) == 0))
 				return (ft_rtn_line(temp, line));
 		}
-		else if ((bytes == 1 && buff[0] == '\n'))
-		{
-			*line = ft_strdup("\n");
-			return (1);
-		}
-		else if (bytes == 0)
+		else if (bytes == 0 || (bytes == 1 && buff[0] == '\n'))
 			break ;
 	}
-	ft_strdel(&str);
+	ft_memdel((void**)&str);
 	return (0);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   keyboard_hooks.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/07/21 17:29:15 by rbozhko           #+#    #+#             */
+/*   Updated: 2018/07/21 17:30:13 by rbozhko          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractol.h"
 
 static	void		ft_get_new_fractol(int keycode, t_map *map)
@@ -53,7 +65,7 @@ static	void		ft_change_zoom(int keycode, t_map *map)
 	}
 }
 
-int 		ft_key_hook(int keycode, t_map *map)
+int					ft_key_hook(int keycode, t_map *map)
 {
 	if (keycode == ESC)
 		exit(0);

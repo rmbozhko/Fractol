@@ -1,6 +1,7 @@
 NAME = fractol
 CC = gcc
-SRC = fractol.c fractols.c fractol_init.c bonus_color.c fractol_threads.c bonus.c draw.c keyboard_hooks.c mouse_hooks.c
+SRC = fractol.c fractols.c fractol_init.c bonus_color.c fractol_threads.c \
+	pscreen.c pscreen_helper.c draw.c keyboard_hooks.c mouse_hooks.c
 OBJ = $(SRC:.c=.o)
 CFLAGS = -c #-Wall -Wextra -Werror
 HEADER = fractol.h
