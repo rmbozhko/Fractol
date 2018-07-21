@@ -12,7 +12,7 @@ $(NAME): $(OBJ)
 	@make -C jpeglib
 	@make -C libft 
 	@$(CC) $(OBJ) -L./libft -lft -L./jpeglib -ljpeg -lmlx -framework OpenGL -framework AppKit -I$(HEADER) -o $(NAME)
-	@echo "\033[m${NAME} is compiled\033[0m"
+	@echo "\033[0;34m${NAME} is compiled\033[0m"
 
 %.o : %.c $(HEADER)
 	@$(CC) $(CFLAGS) $<
