@@ -66,7 +66,6 @@ static void       *ft_three_bytes_img(void *thread)
         // if (((t->y_end + 1) % 4) == 0)
             // t->y_end++;
     }
-    printf("start:%zu|end:%zu\n", t->y_start, t->y_end);
     return (t->dest_str);
 }
 

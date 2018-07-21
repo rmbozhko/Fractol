@@ -25,7 +25,7 @@ static void				ft_show_color_options(const char **color_arr)
 		ft_putendl(color_arr[i]);
 		i++;
 	}
-	ft_putendl("Type \"info\" to review this menu again."); //or \"q\" to quit.");
+	ft_putendl("Type \"info\" to review this menu again.");
 }
 
 static const char			**ft_get_color_options_arr(void)
@@ -42,12 +42,10 @@ static const char			**ft_get_color_options_arr(void)
 	return (arr);
 }
 
-static	short		ft_get_custom_color(void)
+static	short		ft_get_custom_color(int status, short option)
 {
 	char				*line;
-	int					status;
 	const	char		**color_option_arr = ft_get_color_options_arr();
-	short				option;	
 
 	line = ft_strnew(0);
 	ft_show_color_options(color_option_arr);
@@ -64,6 +62,7 @@ static	short		ft_get_custom_color(void)
 		else
 			ft_putendl_fd("Wrong input.", 2);
 		ft_putstr("Your choice: ");
+		ft_strdel(&line);
 	}
 	ft_strdel(&line);
 	ft_free_bidarr((char**)color_option_arr, COLOR_OPTIONS_NUM);
@@ -76,7 +75,7 @@ void						ft_change_default_color(t_map *map)
 {
 	short 		new_color;
 
-	new_color = ft_get_custom_color();
+	new_color = ft_get_custom_color(-1, -1);
 	if (new_color == 0)
 		map->pltt = (t_color){.freq = 0.3F, .center = 128, .width = 127, .b_coef = 0, .g_coef = 0, .r_coef = 1};
 	else if (new_color == 1)

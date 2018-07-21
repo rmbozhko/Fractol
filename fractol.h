@@ -11,10 +11,11 @@
 #include <pthread.h>
 #include <time.h>
 
+# define WARNING "(max:9999)"
 # define MIN_WIN_SIZE "400"
 # define USAGE_BONUS "(mandelbrot, io, ship, julia, newton)\n\t\t (unit should be greater than "
 # define USAGE_STR "usage: ./fractol [fractol_name[width:uint height:uint]]\n\t\t "
-# define CONCAT USAGE_STR USAGE_BONUS MIN_WIN_SIZE ")"
+# define CONCAT USAGE_STR USAGE_BONUS MIN_WIN_SIZE WARNING ")"
 # define FRACTOL_NUM 5
 # define HEIGHT 800
 # define WIDTH 1200
@@ -41,15 +42,15 @@
 # define KEY_RIGHT 124
 # define PLUS 69
 # define NEG 78
-# define C_LTTR 8
-# define P_LTTR 35
-# define S_LTTR 1
+# define C_LTTR 8 // c
+# define P_LTTR 35 // p
+# define S_LTTR 1 // s
 
-# define BUFF_SIZE 1
-# define NL_CODE ft_strchr(temp, '\n')
-# define S_C_SUB (NL_CODE - temp)
-# define IF_FP ((fd < 0 || fd > 4096) || ((read(fd, buff, 0)) == -1 && !(head)))
-# define IF_SP (!(line) || !(ft_memset(buff, 0, BUFF_SIZE + 1)))
+//# define BUFF_SIZE 1
+//# define NL_CODE ft_strchr(temp, '\n')
+//# define S_C_SUB (NL_CODE - temp)
+//# define IF_FP ((fd < 0 || fd > 4096) || ((read(fd, buff, 0)) == -1 && !(head)))
+//# define IF_SP (!(line) || !(ft_memset(buff, 0, BUFF_SIZE + 1)))
 
 # define RANGE map->pltt.width + map->pltt.center
 # define COLOR_GEN(gamma) (sin(map->pltt.freq * iter + gamma) * RANGE)

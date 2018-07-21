@@ -6,13 +6,19 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/28 16:53:46 by rbozhko           #+#    #+#             */
-/*   Updated: 2017/10/29 21:37:46 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 15:02:27 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
+
 # define MEMORY_COEF 5
+# define BUFF_SIZE 1
+# define NL_CODE ft_strchr(temp, '\n')
+# define S_C_SUB (NL_CODE - temp)
+# define IF_FP ((fd < 0 || fd > 4096) || ((read(fd, buff, 0)) == -1 && !(head)))
+# define IF_SP (!(line) || !(ft_memset(buff, 0, BUFF_SIZE + 1)))
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -113,4 +119,5 @@ void			ft_throw_exception(char *str);
 bool			ft_is_int(char *str);
 char			*ft_bidarrjoin(char **arr, size_t len);
 size_t			ft_omit_whitespaces(char *str, size_t i);
+int				get_next_line(const int fd, char **line, char *str);
 #endif

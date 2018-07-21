@@ -6,7 +6,7 @@
 #    By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/30 13:42:51 by rbozhko           #+#    #+#              #
-#    Updated: 2017/10/29 20:07:45 by rbozhko          ###   ########.fr        #
+#    Updated: 2018/07/21 14:58:16 by rbozhko          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ SRC = ft_atoi.c ft_bzero.c ft_is_whitespace.c ft_isalnum.c ft_isalpha.c \
 	  ft_count_char.c ft_free_bidarr.c ft_lstrip.c ft_rstrip.c ft_strip.c \
 	  ft_read_file.c ft_skip_whitespaces.c ft_reverse_str.c ft_putnbrendl.c \
 	  ft_putnbrendl_fd.c ft_is_int.c ft_throw_exception.c ft_print_iarr.c \
-	  ft_bidarrjoin.c ft_omit_whitespaces.c
+	  ft_bidarrjoin.c ft_omit_whitespaces.c get_next_line.c
 
 OBJ = $(SRC:.c=.o)
 

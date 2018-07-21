@@ -90,16 +90,14 @@ char            *ft_get_time_part(const char *curr_time)
     char        *str;
     char        **temp;
     char        **time;
+    char        *month;
 
-    temp = ft_strsplit(curr_time, ' ');
+    temp = ft_strsplit(curr_time, ' '); // 0 - Sat 1 - Jul 2 - 21 3 -15:45:44 4 - 2018
     time = ft_strsplit(temp[3], ':');
     res = ft_strjoin(temp[2], "_");
-    str = ft_strjoin(res, ft_find_month(temp[1]));
-    ft_strdel(&res);
-    res = ft_strjoin(str, "_");
-    ft_strdel(&str);
-    temp[4] = ft_strsub(temp[4], 0, ft_strlen(temp[4]) - 2);
-    str = ft_strjoin(res, temp[4]);
+    month = ft_find_month(temp[1]);
+    str = ft_strjoin(res, month);
+    ft_strdel(&month);
     ft_strdel(&res);
     res = ft_strjoin(str, "_");
     ft_strdel(&str);
@@ -180,12 +178,8 @@ int        ft_make_printscreen(t_map *map)
 
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
-    printf("%d\n", ((map->win_height * map->sl) < ALLOWED_WIN_AREA_FOR_THREADS_COEF));
     if ((map->win_height * map->win_width) < ALLOWED_WIN_AREA_FOR_THREADS_COEF)
-    {
         temp = ft_get_proper(map);
-        // lol = ft_to_rgb(temp, map);
-    }
     else
         temp = ft_get_threads_proper(map, cinfo.input_components);
     while(cinfo.next_scanline < cinfo.image_height)
@@ -196,6 +190,5 @@ int        ft_make_printscreen(t_map *map)
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
     fclose(outfile);
-    printf("Printscreen!\n");
     return 1;
 }

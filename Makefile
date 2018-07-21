@@ -1,9 +1,8 @@
 NAME = fractol
 CC = gcc
-SRC = fractol.c fractols.c fractol_init.c bonus_color.c get_next_line.c fractol_threads.c bonus.c draw.c keyboard_hooks.c mouse_hooks.c
+SRC = fractol.c fractols.c fractol_init.c bonus_color.c fractol_threads.c bonus.c draw.c keyboard_hooks.c mouse_hooks.c
 OBJ = $(SRC:.c=.o)
-DEBUG = #-DDEBUG
-CFLAGS = -c $(DEBUG)#-Wall -Wextra -Werror
+CFLAGS = -c #-Wall -Wextra -Werror
 HEADER = fractol.h
 
 all: $(NAME)
@@ -25,5 +24,6 @@ fclean: clean
 	@make clean -C jpeglib
 	@make fclean -C libft
 	@rm -rf $(NAME)
+	@rm -rf *.jpg
 
 re: fclean all
