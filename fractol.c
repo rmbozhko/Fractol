@@ -6,7 +6,7 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 15:03:51 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 17:27:40 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 19:09:39 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int			main(int argc, char const *argv[])
 			fractol_num = ft_is_fractol(argv[1]);
 		if (fractol_num > -1)
 		{
-			fractol_init(fractol_num, (char*)argv[fractol_pos], &map);
+			fractol_init(fractol_num, &map);
 			ft_draw_fractol(&map);
 			mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
 			mlx_hook(map.win_ptr, 6, 0, ft_julia_coef, &map);

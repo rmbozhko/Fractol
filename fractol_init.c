@@ -6,13 +6,13 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 16:31:46 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 19:07:07 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 19:09:54 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-t_pft			*ft_handle_fractol(int fractol_num)
+t_pft			*ft_handle_fractol(void)
 {
 	t_pft		*fractol_ptr;
 
@@ -26,7 +26,7 @@ t_pft			*ft_handle_fractol(int fractol_num)
 	return (fractol_ptr);
 }
 
-void			fractol_init(int fractol_num, char *fractol_name, t_map *map)
+void			fractol_init(int fractol_num, t_map *map)
 {
 	map->pause = false;
 	map->speed = 1;
@@ -47,6 +47,6 @@ void			fractol_init(int fractol_num, char *fractol_name, t_map *map)
 			map->win_height);
 	map->str = (unsigned char*)mlx_get_data_addr(map->img_ptr,
 			&map->bpp, &map->sl, &map->endian);
-	map->function = ft_handle_fractol(fractol_num);
+	map->function = ft_handle_fractol();
 	map->pltt = (t_color){0.3F, 128, 127, 2, 0, 4};
 }
