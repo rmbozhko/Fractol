@@ -6,7 +6,7 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 16:31:46 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 18:48:52 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 19:07:07 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_pft			*ft_handle_fractol(int fractol_num)
 	return (fractol_ptr);
 }
 
-void		fractol_init(int fractol_num, char *fractol_name, t_map *map)
+void			fractol_init(int fractol_num, char *fractol_name, t_map *map)
 {
 	map->pause = false;
 	map->speed = 1;
