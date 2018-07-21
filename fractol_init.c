@@ -6,17 +6,17 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 16:31:46 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 17:36:23 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/21 18:48:52 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-pft			*ft_handle_fractol(int fractol_num)
+t_pft			*ft_handle_fractol(int fractol_num)
 {
-	pft		*fractol_ptr;
+	t_pft		*fractol_ptr;
 
-	fractol_ptr = (pft*)malloc(sizeof(pft) * FRACTOL_NUM);
+	fractol_ptr = (t_pft*)malloc(sizeof(t_pft) * FRACTOL_NUM);
 	fractol_ptr[0] = mandelbrot;
 	fractol_ptr[1] = io;
 	fractol_ptr[2] = ship;
