@@ -6,13 +6,13 @@
 /*   By: rbozhko <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/21 15:03:51 by rbozhko           #+#    #+#             */
-/*   Updated: 2018/07/21 19:09:39 by rbozhko          ###   ########.fr       */
+/*   Updated: 2018/07/28 17:39:00 by rbozhko          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void		ft_handle_win(t_map *map, const char *value, bool f)
+static	void	ft_handle_win(t_map *map, const char *value, bool f)
 {
 	int			temp;
 
@@ -31,7 +31,7 @@ void		ft_handle_win(t_map *map, const char *value, bool f)
 	ft_throw_exception(USAGE_STR);
 }
 
-int			ft_is_fractol(const char *str)
+static	int		ft_is_fractol(const char *str)
 {
 	if (!ft_strcmp(str, "mandelbrot"))
 		return (0);
@@ -46,7 +46,7 @@ int			ft_is_fractol(const char *str)
 	return (-1);
 }
 
-int			ft_valargs(const char **a, t_map *map, int *pos, int f_num)
+static	int		ft_valargs(const char **a, t_map *map, int *pos, int f_num)
 {
 	int			i;
 	char		*temp;
@@ -75,7 +75,28 @@ int			ft_valargs(const char **a, t_map *map, int *pos, int f_num)
 	return (f_num);
 }
 
-int			main(int argc, char const *argv[])
+static	int		display_menu(t_map *m)
+{
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 10, 0x6EDBBA,
+			"Control: ");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 28, 0x6EDBBA,
+			"Press 1-9 to speed up fractol moving");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 42, 0x6EDBBA,
+			"Press 'p' to stop fractol spinning");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 56, 0x6EDBBA,
+			"Press 's' to make screenshot of current fractol");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 70, 0x6EDBBA,
+			"Press space to make increase number of redrawing iterations");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 84, 0x6EDBBA,
+			"Press + or - to zoom");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 98, 0x6EDBBA,
+			"Press 0-4 to change fractol");
+	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 112, 0x6EDBBA,
+			"Move your Fractol with direction buttons");
+	return (0);
+}
+
+int				main(int argc, char const *argv[])
 {
 	int			fractol_num;
 	t_map		map;
@@ -86,10 +107,8 @@ int			main(int argc, char const *argv[])
 		map.win_width = WIDTH;
 		map.win_height = HEIGHT;
 		fractol_pos = 1;
-		if (argc > 2)
-			fractol_num = ft_valargs((argv) + 1, &map, &fractol_pos, -1);
-		else
-			fractol_num = ft_is_fractol(argv[1]);
+		fractol_num = (argc == 2) ? ft_is_fractol(argv[1]) :
+			ft_valargs((argv) + 1, &map, &fractol_pos, -1);
 		if (fractol_num > -1)
 		{
 			fractol_init(fractol_num, &map);
@@ -97,6 +116,7 @@ int			main(int argc, char const *argv[])
 			mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
 			mlx_hook(map.win_ptr, 6, 0, ft_julia_coef, &map);
 			mlx_mouse_hook(map.win_ptr, ft_mouse_hook, &map);
+			mlx_expose_hook(map.win_ptr, display_menu, &map);
 			mlx_loop(map.mlx_ptr);
 			return (0);
 		}
