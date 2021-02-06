@@ -74,7 +74,7 @@ static	int		ft_valargs(const char **a, t_map *map, int *pos, int f_num)
 	}
 	return (f_num);
 }
-
+/*
 static	int		display_menu(t_map *m)
 {
 	mlx_string_put(m->mlx_ptr, m->win_ptr, 0, 10, 0x6EDBBA,
@@ -95,20 +95,40 @@ static	int		display_menu(t_map *m)
 			"Move your Fractol with direction buttons");
 	return (0);
 }
+*/
+static	int 	ft_print_help() {
+	printf("%s\n", "Control: "); 
+	printf("%s\n", "Press 1-9 to speed up fractol moving");
+	printf("%s\n", "Press 'p' to stop fractol spinning");
+	printf("%s\n", "Press 's' to make screenshot of current fractol");
+	printf("%s\n", "Press space to make increase number of redrawing iterations");
+	printf("%s\n", "Press + or - to zoom");
+	printf("%s\n", "Press 0-4 to change fractol");
+	printf("%s\n", "Move your Fractol with direction buttons");
+
+	return (0);
+}
 
 int				main(int argc, char const *argv[])
 {
 	int			fractol_num;
 	t_map		map;
 	int			fractol_pos;
-
+	
 	if (argc >= 2)
 	{
+		if (!ft_strcmp(argv[1], "-h")) {
+			return (ft_print_help());
+		}
 		map.win_width = WIDTH;
 		map.win_height = HEIGHT;
 		fractol_pos = 1;
-		fractol_num = (argc == 2) ? ft_is_fractol(argv[1]) :
-			ft_valargs((argv) + 1, &map, &fractol_pos, -1);
+		if (argc == 2) {
+			fractol_num = ft_is_fractol(argv[1]);
+		} else {
+			fractol_num = ft_valargs(
+							(argv) + 1, &map, &fractol_pos, -1);
+		}
 		if (fractol_num > -1)
 		{
 			fractol_init(fractol_num, &map);
@@ -116,7 +136,7 @@ int				main(int argc, char const *argv[])
 			mlx_hook(map.win_ptr, 2, 0, ft_key_hook, &map);
 			mlx_hook(map.win_ptr, 6, 0, ft_julia_coef, &map);
 			mlx_mouse_hook(map.win_ptr, ft_mouse_hook, &map);
-			mlx_expose_hook(map.win_ptr, display_menu, &map);
+			//mlx_expose_hook(map.win_ptr, display_menu, &map);
 			mlx_loop(map.mlx_ptr);
 			return (0);
 		}
