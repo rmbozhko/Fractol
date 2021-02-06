@@ -91,7 +91,7 @@ typedef	struct			s_complex
 
 typedef	struct			s_color
 {
-	const float			freq;
+	float				freq;
 	unsigned short		center;
 	unsigned short		width;
 	unsigned short		b_coef;
