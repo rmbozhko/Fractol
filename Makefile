@@ -9,9 +9,10 @@ HEADER = fractol.h
 all: $(NAME)
 
 $(NAME): $(OBJ)
+	@make -C minilibx
 	@make -C jpeglib
 	@make -C libft 
-	@$(CC) $(OBJ) -L./libft -lft -L./jpeglib -ljpeg -lmlx -framework OpenGL -framework AppKit -I$(HEADER) -o $(NAME)
+	@$(CC) $(OBJ) -L./libft -lft -L./jpeglib -ljpeg -L./minilibx -lmlx -framework OpenGL -framework AppKit -I$(HEADER) -o $(NAME)
 	@echo "\033[0;34m${NAME} is compiled\033[0m"
 
 %.o : %.c $(HEADER)
@@ -19,6 +20,8 @@ $(NAME): $(OBJ)
 
 clean:
 	@make clean -C libft
+	@make clean -C jpeglib
+	@make clean -C minilibx
 	@rm -rf $(OBJ)
 
 fclean: clean
