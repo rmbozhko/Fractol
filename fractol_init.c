@@ -48,5 +48,7 @@ void			fractol_init(int fractol_num, t_map *map)
 	map->str = (unsigned char*)mlx_get_data_addr(map->img_ptr,
 			&map->bpp, &map->sl, &map->endian);
 	map->function = ft_handle_fractol();
-	map->pltt = (t_color){0.3F, 128, 127, 2, 0, 4};
+	// BY changing last three parameters (rgb) we can change fractol's color
+	//map->pltt = (t_color){0.3F, 128, 127, 2, 0, 4};
+	map->pltt = (t_color){0.3F, 128, 127, 5, 1, 2};
 }
